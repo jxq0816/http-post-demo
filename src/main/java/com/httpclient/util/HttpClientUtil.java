@@ -31,7 +31,7 @@ public class HttpClientUtil{
     }
 
     /**
-     * post传递字节流
+     * 第一种：post字节流
      * @param lineTxt
      * @throws IOException
      */
@@ -75,7 +75,7 @@ public class HttpClientUtil{
     }
 
     /**
-     * 发送 post请求访问本地应用并根据传递参数不同返回不同结果
+     * 第二种：post参数列表
      */
     public void postParam() {
         // 创建默认的httpClient实例.
