@@ -7,6 +7,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
@@ -22,7 +23,7 @@ public class HttpClientUtil{
 
     @Test
     public void jUnitTestPost() {
-        post();
+        postParam();
     }
     @Test
     public void jUnitTestGet() {
@@ -30,9 +31,53 @@ public class HttpClientUtil{
     }
 
     /**
+     * post传递字节流
+     * @param lineTxt
+     * @throws IOException
+     */
+    public static void postByte(String lineTxt) throws IOException {
+
+        // 创建默认的httpClient实例.
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        // 创建httpPost
+        HttpPost httpPost = new HttpPost("http://127.0.0.1:8080/data/store?cacheName=cache02");
+        try {
+            httpPost.setEntity(new ByteArrayEntity(lineTxt.getBytes("utf8")));//使用字节流传输
+            httpPost.setHeader("Content-type", "text/xml;charset=utf8");//内容类型
+            httpPost.setHeader("Connection", "Close");//服务端发送完数据，即关闭连接
+            //HTTP 1.0规定浏览器与服务器只保持短暂的连接，浏览器的每次请求都需要与服务器建立一个TCP连接，服务器完成请求处理后立即断开TCP连接，服务器不跟踪每个客户也不记录过去的请求
+            CloseableHttpResponse response = httpClient.execute(httpPost);
+            try {
+                HttpEntity entity = response.getEntity();
+                if (entity != null) {
+                    String rs=EntityUtils.toString(entity, "UTF-8");
+                    System.out.println(rs);
+                }
+            } finally {
+                response.close();
+                return;
+            }
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e1) {
+            e1.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            // 关闭连接,释放资源
+            try {
+                httpClient.close();
+                return;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
      * 发送 post请求访问本地应用并根据传递参数不同返回不同结果
      */
-    public void post() {
+    public void postParam() {
         // 创建默认的httpClient实例.
         CloseableHttpClient httpclient = HttpClients.createDefault();
         // 创建httppost
